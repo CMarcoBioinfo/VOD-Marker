@@ -5,6 +5,7 @@ async function registerAppBridge(url) {
   const originPattern = `${parsed.origin}/*`;
   const existing = await chrome.scripting.getRegisteredContentScripts();
   const oldScript = existing.find(script => script.id === 'vod-marker-app-bridge');
+  if (oldScript?.matches?.includes(originPattern)) return;
   if (oldScript) await chrome.scripting.unregisterContentScripts({ ids: ['vod-marker-app-bridge'] });
   await chrome.scripting.registerContentScripts([{
     id: 'vod-marker-app-bridge',
@@ -24,26 +25,15 @@ chrome.runtime.onInstalled.addListener(async () => {
   } catch (_) {}
 });
 
-chrome.runtime.onStartup.addListener(async () => {
-  const { [APP_URL_KEY]: appUrl } = await chrome.storage.local.get(APP_URL_KEY);
-  if (!appUrl) return;
-  try {
-    const originPattern = `${new URL(appUrl).origin}/*`;
-    if (!(await chrome.permissions.contains({ origins: [originPattern] }))) return;
-    await registerAppBridge(appUrl);
-    await openAppTab(appUrl);
-  } catch (_) {}
-});
-
-async function openAppTab(appUrl) {
+async function openAppTab(appUrl, activate = false) {
   const parsed = new URL(appUrl);
   const tabs = await chrome.tabs.query({ url: `${parsed.origin}/*` });
   const existing = tabs.find(tab => tab.url === parsed.href);
   if (existing?.id) {
-    await chrome.tabs.update(existing.id, { active: false });
+    await chrome.tabs.update(existing.id, { active: activate });
     return existing.id;
   }
-  const created = await chrome.tabs.create({ url: parsed.href, active: false });
+  const created = await chrome.tabs.create({ url: parsed.href, active: activate });
   return created.id;
 }
 
@@ -61,7 +51,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
       }
       await registerAppBridge(appUrl);
-      await openAppTab(appUrl);
+      await openAppTab(appUrl, true);
       sendResponse({ ok: true });
     }).catch(() => sendResponse({ ok: false }));
     return true;

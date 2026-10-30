@@ -14,9 +14,9 @@ document.getElementById('save').addEventListener('click', async () => {
   let parsed;
   try {
     parsed = new URL(input.value.trim());
-    if (!['https:', 'http:'].includes(parsed.protocol) || parsed.username || parsed.password) throw new Error();
+    if (parsed.protocol !== 'https:' || parsed.origin !== new URL(DEFAULT_APP_URL).origin || parsed.username || parsed.password) throw new Error();
   } catch (_) {
-    status.textContent = 'Saisis une adresse web valide (https://… ou http://…).';
+    status.textContent = 'Utilise l’adresse HTTPS GitHub Pages prévue pour cette extension.';
     return;
   }
   const originPattern = `${parsed.origin}/*`;
