@@ -28,13 +28,32 @@ chrome.runtime.onInstalled.addListener(async () => {
 async function openAppTab(appUrl, activate = false) {
   const parsed = new URL(appUrl);
   const tabs = await chrome.tabs.query({ url: `${parsed.origin}/*` });
-  const existing = tabs.find(tab => tab.url === parsed.href);
+  const existing = tabs.find(tab => {
+    try { const current = new URL(tab.url); return current.pathname === parsed.pathname; } catch (_) { return false; }
+  });
   if (existing?.id) {
     await chrome.tabs.update(existing.id, { active: activate });
     return existing.id;
   }
   const created = await chrome.tabs.create({ url: parsed.href, active: activate });
   return created.id;
+}
+
+function channelFromTwitchUrl(value) {
+  try {
+    const url = new URL(value);
+    if (!['www.twitch.tv', 'twitch.tv'].includes(url.hostname)) return '';
+    const login = url.pathname.split('/').filter(Boolean)[0] || '';
+    return /^[a-zA-Z0-9_]{1,25}$/.test(login) && !['directory', 'downloads', 'jobs', 'settings', 'videos', 'wallet', 'subscriptions', 'inventory', 'friends', 'search', 'login', 'signup'].includes(login.toLowerCase()) ? login : '';
+  } catch (_) { return ''; }
+}
+
+function recordUrl(appUrl, channel, at) {
+  const url = new URL(appUrl);
+  url.searchParams.set('vod-marker-action', 'record');
+  url.searchParams.set('vod-marker-at', String(at));
+  if (channel) url.searchParams.set('vod-marker-channel', channel);
+  return url.href;
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -78,17 +97,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     await registerAppBridge(appUrl);
     const tabs = await chrome.tabs.query({ url: `${parsed.origin}/*` });
-    const appTab = tabs.find(tab => tab.id !== sender.tab?.id);
+    const appTab = tabs.find(tab => {
+      if (tab.id === sender.tab?.id) return false;
+      try { const current = new URL(tab.url); return current.pathname === parsed.pathname; } catch (_) { return false; }
+    });
+    const channel = channelFromTwitchUrl(sender.tab?.url || '');
     if (!appTab?.id) {
-      await openAppTab(appUrl);
-      sendResponse({ ok: false, error: 'J’ai ouvert votre index. Cliquez encore une fois sur REC pour envoyer le marqueur.' });
+      await chrome.tabs.create({ url: recordUrl(appUrl, channel, message.at), active: true });
+      sendResponse({ ok: true, channel, opened: true });
       return;
     }
     try {
-      await chrome.tabs.sendMessage(appTab.id, { type: 'vod-marker-record', at: message.at });
-      sendResponse({ ok: true });
+      await chrome.tabs.update(appTab.id, { active: true });
+      await chrome.tabs.sendMessage(appTab.id, { type: 'vod-marker-record', at: message.at, channel });
+      sendResponse({ ok: true, channel });
     } catch (_) {
-      sendResponse({ ok: false, error: 'Rechargez l’onglet de l’index pour activer la liaison.' });
+      await chrome.tabs.update(appTab.id, { url: recordUrl(appUrl, channel, message.at), active: true });
+      sendResponse({ ok: true, channel, opened: true });
     }
   }).catch(() => sendResponse({ ok: false, error: 'Impossible de contacter l’index.' }));
   return true;
