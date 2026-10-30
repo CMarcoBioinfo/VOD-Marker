@@ -35,13 +35,13 @@ Un token expiré doit être renouvelé dans le parcours OAuth puis remplacé ici
 
 Le dossier `extension/` contient une extension Chromium (Chrome et Edge) qui ajoute un bouton flottant **● REC** sur Twitch et accepte la touche **M** lorsque Twitch est au premier plan. Le marqueur est créé et sauvegardé par l’index déjà ouvert, avec son mode de timecode, son décalage configuré et son réglage « Retrancher ».
 
-1. Publiez l’application avec GitHub Pages (ou servez-la en HTTP(S)) et ouvrez son adresse dans un onglet. Gardez cet onglet ouvert.
+1. Publiez l’application avec GitHub Pages (ou servez-la en HTTP(S)). Pour ce dépôt, l’adresse par défaut préremplie est `https://cmarcobioinfo.github.io/VOD-Marker/`.
 2. Dans Chrome, ouvrez `chrome://extensions` (dans Edge : `edge://extensions`) et activez **Mode développeur**.
 3. Choisissez **Charger l’extension non empaquetée**, puis sélectionnez le dossier `extension/` de ce projet.
-4. Ouvrez le menu de l’extension, saisissez l’adresse complète de votre index (par ex. `https://votre-nom.github.io/vod-marker/`) et cliquez **Enregistrer et autoriser**. Acceptez l’accès à cette origine précise.
-5. Rechargez les onglets de l’index et de Twitch. Sur Twitch, cliquez sur **● REC** ou appuyez sur **M**. Le marqueur apparaît dans l’index.
+4. Ouvrez le menu de l’extension et cliquez une seule fois sur **Autoriser et ouvrir l’application**. L’adresse est mémorisée et le navigateur demande l’autorisation pour ce site. Si GitHub Pages n’est pas encore publié, activez Pages dans **Settings → Pages** et réessayez.
+5. L’application s’ouvre dans un onglet en arrière-plan au prochain démarrage du navigateur. Si elle n’est pas ouverte et que vous cliquez sur **● REC**, l’extension l’ouvre ; cliquez encore sur REC pour envoyer le premier marqueur. Sur Twitch, le raccourci **M** est également disponible.
 
-Le raccourci agit uniquement quand l’onglet Twitch est actif et n’intercepte pas les touches dans les champs de saisie. L’extension ne démarre pas automatiquement sur les pages déjà ouvertes : rechargez-les après configuration. Si l’index est ouvert via `file://`, utilisez plutôt une adresse HTTP(S) et accordez l’autorisation correspondante. Cette extension est actuellement pour Chrome/Edge (Manifest V3), pas Firefox. Elle n’accède pas au token Twitch. Pour arrêter, désactivez l’extension dans la page des extensions du navigateur.
+Le raccourci agit uniquement quand l’onglet Twitch est actif et n’intercepte pas les touches dans les champs de saisie. Après la configuration initiale, l’extension mémorise l’adresse et rouvre l’index dans un onglet en arrière-plan au démarrage du navigateur ; elle ouvre aussi l’index si REC est utilisé alors qu’il est fermé. Rechargez Twitch après l’installation ou la mise à jour de l’extension. Si l’index est ouvert via `file://`, utilisez plutôt une adresse HTTP(S). Cette extension est actuellement pour Chrome/Edge (Manifest V3), pas Firefox. Elle n’accède pas au token Twitch. Pour arrêter, désactivez l’extension dans la page des extensions du navigateur.
 
 
 ## Modes et fiabilité

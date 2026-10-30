@@ -1,8 +1,13 @@
+const DEFAULT_APP_URL = 'https://cmarcobioinfo.github.io/VOD-Marker/';
 const input = document.getElementById('appUrl');
 const status = document.getElementById('status');
 
-chrome.storage.local.get('appUrl').then(({ appUrl }) => {
-  if (appUrl) input.value = appUrl;
+chrome.storage.local.get('appUrl').then(async ({ appUrl }) => {
+  input.value = appUrl || DEFAULT_APP_URL;
+  if (!appUrl) {
+    await chrome.storage.local.set({ appUrl: DEFAULT_APP_URL });
+    status.textContent = 'Adresse de l’application préremplie. Clique une fois sur Enregistrer et autoriser.';
+  }
 });
 
 document.getElementById('save').addEventListener('click', async () => {
@@ -29,7 +34,10 @@ document.getElementById('save').addEventListener('click', async () => {
       status.textContent = 'Adresse enregistrée, mais la liaison n’a pas pu être activée. Recharge l’extension.';
       return;
     }
-    status.textContent = 'Adresse enregistrée et autorisée. Recharge les onglets de l’index et de Twitch.';
+    const opened = await chrome.runtime.sendMessage({ type: 'vod-marker-open-app' });
+    status.textContent = opened?.ok
+      ? 'Adresse enregistrée : l’application est ouverte. Recharge Twitch pour voir REC.'
+      : 'Adresse autorisée. Ouvre l’application depuis l’extension et recharge Twitch.';
   } catch (_) {
     status.textContent = 'Échec de la configuration. Réessaie depuis le menu de l’extension.';
   }

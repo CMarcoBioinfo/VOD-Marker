@@ -10,12 +10,12 @@
 </head>
 <body>
   <h1>Marqueur VOD Twitch</h1>
-  <p>Garde ton index ouvert dans un onglet. Cette extension ajoute un bouton REC sur Twitch et envoie le marqueur à l’index.</p>
+  <p>L’adresse de ton application est préremplie. Après l’autorisation initiale, l’extension l’ouvrira automatiquement. REC sur Twitch enverra les marqueurs à cet index.</p>
   <label for="appUrl">Adresse complète de l’index</label>
   <input id="appUrl" type="url" placeholder="https://nom.github.io/projet/" autocomplete="url">
-  <button id="save" type="button">Enregistrer et autoriser</button>
+  <button id="save" type="button">Autoriser et ouvrir l’application</button>
   <div id="status" role="status" aria-live="polite"></div>
-  <small>Le raccourci M fonctionne quand Twitch est au premier plan. Évite les champs de saisie.</small>
+  <small>À faire une seule fois : autorise l’adresse préremplie. Le raccourci M fonctionne quand Twitch est au premier plan, hors des champs de saisie.</small>
   <script src="popup.js"></script>
 </body>
 </html>

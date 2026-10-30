@@ -24,7 +24,48 @@ chrome.runtime.onInstalled.addListener(async () => {
   } catch (_) {}
 });
 
+chrome.runtime.onStartup.addListener(async () => {
+  const { [APP_URL_KEY]: appUrl } = await chrome.storage.local.get(APP_URL_KEY);
+  if (!appUrl) return;
+  try {
+    const originPattern = `${new URL(appUrl).origin}/*`;
+    if (!(await chrome.permissions.contains({ origins: [originPattern] }))) return;
+    await registerAppBridge(appUrl);
+    await openAppTab(appUrl);
+  } catch (_) {}
+});
+
+async function openAppTab(appUrl) {
+  const parsed = new URL(appUrl);
+  const tabs = await chrome.tabs.query({ url: `${parsed.origin}/*` });
+  const existing = tabs.find(tab => tab.url === parsed.href);
+  if (existing?.id) {
+    await chrome.tabs.update(existing.id, { active: false });
+    return existing.id;
+  }
+  const created = await chrome.tabs.create({ url: parsed.href, active: false });
+  return created.id;
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type === 'vod-marker-open-app') {
+    chrome.storage.local.get(APP_URL_KEY).then(async ({ [APP_URL_KEY]: appUrl }) => {
+      if (!appUrl) {
+        sendResponse({ ok: false });
+        return;
+      }
+      const parsed = new URL(appUrl);
+      const originPattern = `${parsed.origin}/*`;
+      if (!(await chrome.permissions.contains({ origins: [originPattern] }))) {
+        sendResponse({ ok: false });
+        return;
+      }
+      await registerAppBridge(appUrl);
+      await openAppTab(appUrl);
+      sendResponse({ ok: true });
+    }).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
   if (message?.type === 'vod-marker-configured' && typeof message.appUrl === 'string') {
     registerAppBridge(message.appUrl).then(() => sendResponse({ ok: true })).catch(() => sendResponse({ ok: false }));
     return true;
@@ -49,7 +90,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const tabs = await chrome.tabs.query({ url: `${parsed.origin}/*` });
     const appTab = tabs.find(tab => tab.id !== sender.tab?.id);
     if (!appTab?.id) {
-      sendResponse({ ok: false, error: 'Ouvrez votre index dans un onglet, puis réessayez.' });
+      await openAppTab(appUrl);
+      sendResponse({ ok: false, error: 'J’ai ouvert votre index. Cliquez encore une fois sur REC pour envoyer le marqueur.' });
       return;
     }
     try {
