@@ -1,5 +1,5 @@
 /* Cache statique minimal pour l'installation PWA (hors file://). */
-const CACHE = 'vod-marker-v3';
+const CACHE = 'vod-marker-v4';
 const FILES = ['./', './index.html', './css/style.css', './js/i18n.js', './js/timecode.js', './js/storage.js', './js/twitch.js', './js/export.js', './js/shortcuts.js', './js/app.js', './assets/icon.svg', './manifest.webmanifest'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES))));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))));

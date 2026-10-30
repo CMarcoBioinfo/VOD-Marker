@@ -103,16 +103,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     const channel = channelFromTwitchUrl(sender.tab?.url || '');
     if (!appTab?.id) {
-      await chrome.tabs.create({ url: recordUrl(appUrl, channel, message.at), active: true });
+      await chrome.tabs.create({ url: recordUrl(appUrl, channel, message.at), active: false });
       sendResponse({ ok: true, channel, opened: true });
       return;
     }
     try {
-      await chrome.tabs.update(appTab.id, { active: true });
       await chrome.tabs.sendMessage(appTab.id, { type: 'vod-marker-record', at: message.at, channel });
       sendResponse({ ok: true, channel });
     } catch (_) {
-      await chrome.tabs.update(appTab.id, { url: recordUrl(appUrl, channel, message.at), active: true });
+      await chrome.tabs.update(appTab.id, { url: recordUrl(appUrl, channel, message.at) });
       sendResponse({ ok: true, channel, opened: true });
     }
   }).catch(() => sendResponse({ ok: false, error: 'Impossible de contacter l’index.' }));

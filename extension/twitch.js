@@ -99,7 +99,7 @@
       if (chrome.runtime.lastError) {
         showStatus('Liaison indisponible. Vérifiez la configuration de l’extension.');
       } else if (response?.ok) {
-        showStatus(response.opened ? `Application ouverte${response.channel ? ` · ${response.channel}` : ''} : synchronisation en cours.` : `Application activée${response.channel ? ` · ${response.channel}` : ''} : marqueur envoyé.`);
+        showStatus(response.opened ? `Application préparée en arrière-plan${response.channel ? ` · ${response.channel}` : ''} : synchronisation en cours.` : `Marqueur envoyé à l’application en arrière-plan${response.channel ? ` · ${response.channel}` : ''}.`);
       } else {
         showStatus(response?.error || 'Impossible d’envoyer le marqueur.');
       }
