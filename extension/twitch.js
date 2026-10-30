@@ -93,17 +93,27 @@
     busy = true;
     const button = document.querySelector(`#${ROOT_ID} button`);
     if (button) button.disabled = true;
-    chrome.runtime.sendMessage({ type: 'vod-marker-record', at: Date.now() }, response => {
+    try {
+      chrome.runtime.sendMessage({ type: 'vod-marker-record', at: Date.now() }, response => {
+        busy = false;
+        if (button?.isConnected) button.disabled = false;
+        try {
+          if (chrome.runtime.lastError) {
+            showStatus('Liaison indisponible. Rechargez cet onglet Twitch et vérifiez la configuration de l’extension.');
+          } else if (response?.ok) {
+            showStatus(response.opened ? `Application préparée en arrière-plan${response.channel ? ` · ${response.channel}` : ''} : synchronisation en cours.` : `Marqueur envoyé à l’application en arrière-plan${response.channel ? ` · ${response.channel}` : ''}.`);
+          } else {
+            showStatus(response?.error || 'Impossible d’envoyer le marqueur.');
+          }
+        } catch (_) {
+          showStatus('Extension rechargée : rechargez cet onglet Twitch avant de réessayer.');
+        }
+      });
+    } catch (_) {
       busy = false;
-      if (button) button.disabled = false;
-      if (chrome.runtime.lastError) {
-        showStatus('Liaison indisponible. Vérifiez la configuration de l’extension.');
-      } else if (response?.ok) {
-        showStatus(response.opened ? `Application préparée en arrière-plan${response.channel ? ` · ${response.channel}` : ''} : synchronisation en cours.` : `Marqueur envoyé à l’application en arrière-plan${response.channel ? ` · ${response.channel}` : ''}.`);
-      } else {
-        showStatus(response?.error || 'Impossible d’envoyer le marqueur.');
-      }
-    });
+      if (button?.isConnected) button.disabled = false;
+      showStatus('Extension rechargée : rechargez cet onglet Twitch avant de réessayer.');
+    }
   }
 
   document.addEventListener('keydown', event => {

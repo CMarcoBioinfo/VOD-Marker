@@ -4,11 +4,13 @@ async function registerAppBridge(url) {
   const parsed = new URL(url);
   const originPattern = `${parsed.origin}/*`;
   const existing = await chrome.scripting.getRegisteredContentScripts();
-  const oldScript = existing.find(script => script.id === 'vod-marker-app-bridge');
-  if (oldScript?.matches?.includes(originPattern)) return;
-  if (oldScript) await chrome.scripting.unregisterContentScripts({ ids: ['vod-marker-app-bridge'] });
+  const legacyScript = existing.find(script => script.id === 'vod-marker-app-bridge');
+  if (legacyScript) await chrome.scripting.unregisterContentScripts({ ids: [legacyScript.id] });
+  const bridgeScript = existing.find(script => script.id === 'vod-marker-app-bridge-v2');
+  if (bridgeScript?.matches?.includes(originPattern)) return;
+  if (bridgeScript) await chrome.scripting.unregisterContentScripts({ ids: [bridgeScript.id] });
   await chrome.scripting.registerContentScripts([{
-    id: 'vod-marker-app-bridge',
+    id: 'vod-marker-app-bridge-v2',
     matches: [originPattern],
     js: ['app-bridge.js'],
     runAt: 'document_start',
@@ -77,6 +79,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   if (message?.type === 'vod-marker-configured' && typeof message.appUrl === 'string') {
     registerAppBridge(message.appUrl).then(() => sendResponse({ ok: true })).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
+  if (message?.type === 'vod-marker-activate-for-oauth') {
+    chrome.storage.local.get(APP_URL_KEY).then(async ({ [APP_URL_KEY]: appUrl }) => {
+      if (!appUrl || !sender.tab?.id) { sendResponse({ ok: false }); return; }
+      const expected = new URL(appUrl), current = new URL(sender.tab.url || '');
+      if (current.origin !== expected.origin || current.pathname !== expected.pathname) { sendResponse({ ok: false }); return; }
+      await chrome.tabs.update(sender.tab.id, { active: true });
+      sendResponse({ ok: true });
+    }).catch(() => sendResponse({ ok: false }));
     return true;
   }
   if (!message || message.type !== 'vod-marker-record') return;
