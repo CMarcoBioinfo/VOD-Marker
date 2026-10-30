@@ -16,7 +16,7 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = '● REC';
-    button.title = 'Cliquer pour marquer · déplacer en faisant glisser · raccourci : M';
+    button.title = 'Cliquer pour marquer · déplacer en faisant glisser · raccourci : B';
     button.setAttribute('aria-label', 'Marquer ce moment. Faire glisser pour déplacer le bouton.');
     button.style.cssText = 'border:0;border-radius:999px;padding:12px 18px;background:#d92d45;color:white;font:700 15px system-ui,sans-serif;box-shadow:0 4px 18px #0008;cursor:grab;touch-action:none;user-select:none;';
     button.addEventListener('click', () => {
@@ -119,7 +119,7 @@
   document.addEventListener('keydown', event => {
     const target = event.target;
     const typing = target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
-    if (typing || event.isComposing || event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.key.toLowerCase() !== 'm') return;
+    if (typing || event.isComposing || event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.key.toLowerCase() !== 'b') return;
     event.preventDefault();
     record();
   });

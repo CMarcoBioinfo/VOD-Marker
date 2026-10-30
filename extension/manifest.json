@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Marqueur VOD Twitch — REC",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Ajoute un bouton REC sur Twitch et envoie les timecodes à votre marqueur VOD.",
   "permissions": ["storage", "tabs", "scripting"],
   "optional_host_permissions": ["https://cmarcobioinfo.github.io/*"],
