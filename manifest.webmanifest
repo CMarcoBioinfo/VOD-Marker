@@ -1,0 +1,13 @@
+{
+  "name": "Marqueur VOD Twitch",
+  "short_name": "Marqueur VOD",
+  "description": "Marquez les moments forts d'un stream et retrouvez-les dans la VOD.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#111827",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

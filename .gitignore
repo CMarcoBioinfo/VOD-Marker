@@ -1,0 +1,16 @@
+# Secrets et configuration locale (ne jamais versionner de token)
+.env
+.env.*
+!.env.example
+secrets.*
+*.token
+
+# Système et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Fichiers temporaires
+*.log
+*.tmp

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Marqueur VOD Twitch — REC",
+  "version": "1.0.0",
+  "description": "Ajoute un bouton REC sur Twitch et envoie les timecodes à votre marqueur VOD.",
+  "permissions": ["storage", "tabs", "scripting"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": ["https://www.twitch.tv/*", "https://twitch.tv/*"],
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_title": "Configurer le marqueur VOD",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.twitch.tv/*", "https://twitch.tv/*"],
+      "js": ["twitch.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
