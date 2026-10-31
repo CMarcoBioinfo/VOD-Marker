@@ -1,94 +1,70 @@
 # Marqueur VOD Twitch
 
-Petit outil web autonome pour noter les moments forts d’un stream avec le **temps écoulé de sa VOD**, afin de transmettre les repères à votre monteuse. Interface française/anglaise, thème sombre, marqueurs modifiables, notes, historique et export texte.
+VOD Marker permet de noter les moments importants d’un live avec leur timecode, puis de copier ou télécharger la liste pour le montage. L’extension Chrome/Edge ajoute un bouton **● REC** directement sur Twitch.
 
-## Aperçu
+## Utiliser l’extension : guide rapide
 
-La page rassemble les réglages de synchronisation, une grande horloge avec bouton de marquage, la liste des repères et les options d’export. La mise en page s’adapte à une petite fenêtre et aux mobiles.
+> **En bref :** installez l’extension, cliquez une fois sur **Autoriser et ouvrir l’application**, connectez-vous à Twitch, puis utilisez **● REC** sur la page du live. Le raccourci par défaut est **B**.
 
-## Démarrer
+### 1. Installer l’extension (Chrome ou Edge sur ordinateur)
 
-Téléchargez ou décompressez le projet et double-cliquez sur `index.html`. Aucun serveur, installation ou compilation n’est nécessaire. Les modes manuel et local fonctionnent hors ligne. Le navigateur peut limiter l’API Twitch depuis `file://` ; dans ce cas, essayez GitHub Pages ou un mode manuel.
+> **Important :** cette extension est fournie sous forme non empaquetée. Il faut activer le **Mode développeur du navigateur** pour pouvoir la charger. Ce n’est pas un mode à activer dans Twitch ou dans VOD Marker.
 
-## Pour les utilisateurs : démarrage rapide
+1. Téléchargez le projet et décompressez-le dans un dossier que vous ne déplacerez pas. L’extension doit continuer à pouvoir accéder au dossier `extension/`.
+2. Ouvrez la page des extensions : `chrome://extensions` dans Chrome ou `edge://extensions` dans Edge.
+3. Activez le bouton **Mode développeur** sur cette page.
+4. Cliquez sur **Charger l’extension non empaquetée** et choisissez le dossier `extension/` du projet (pas le dossier parent).
+5. Si nécessaire, épinglez **Marqueur VOD Twitch — REC** dans le menu des extensions pour retrouver facilement son icône.
 
-Vous n’avez pas à créer de dépôt GitHub, publier un site ni créer une application Twitch. Le site VOD Marker et l’application Twitch sont déjà configurés par l’auteur. Pour utiliser le bouton REC, installez l’extension Chrome/Edge ci-dessous, autorisez son accès au site VOD Marker, puis connectez-vous à Twitch quand l’application le demande. La section GitHub Pages plus bas concerne uniquement la personne qui publie ou met à jour le projet.
+### 2. Faire la configuration initiale
 
-## Connexion Twitch et sécurité
+1. Cliquez sur l’icône de l’extension dans la barre d’outils du navigateur.
+2. Dans la fenêtre qui s’ouvre, cliquez sur **Autoriser et ouvrir l’application**. L’adresse officielle est déjà remplie : gardez-la telle quelle et acceptez l’autorisation d’accès au site si le navigateur la demande.
+3. Le site VOD Marker s’ouvre dans un onglet. Dans le mode **API Twitch**, cliquez sur **Se connecter avec Twitch**, puis autorisez la connexion. Il n’est pas nécessaire de créer un compte développeur Twitch ni de saisir une clé.
+4. Ouvrez la page du live Twitch et rechargez-la. Le bouton rouge **● REC** doit apparaître.
 
-Le Client ID de l’application Twitch officielle est déjà intégré à VOD Marker : l’utilisateur n’a pas à créer sa propre application ni à saisir de clé. Dans l’application, choisissez **API Twitch**, indiquez le nom de la chaîne, puis cliquez sur **Se connecter avec Twitch** et autorisez la connexion. La redirection OAuth de l’application publiée est configurée pour `https://cmarcobioinfo.github.io/VOD-Marker/`.
+La configuration de l’extension et la connexion Twitch sont deux autorisations distinctes : l’extension a besoin d’accéder au site VOD Marker, et VOD Marker a besoin de votre autorisation Twitch pour récupérer le timecode du live.
 
-Le token est validé auprès de Twitch puis conservé dans le stockage local de ce navigateur ; il n’est pas transmis à un serveur VOD Marker. Le Client ID est public, le Client Secret n’est ni utilisé ni demandé. Twitch impose la validation du token au démarrage et toutes les heures ; VOD Marker suit cette règle et efface localement un token révoqué. Utilisez **Déconnecter** pour supprimer le token. Sur un ordinateur partagé, déconnectez-vous puis effacez les données du site. Les limites Twitch, le réseau et les restrictions CORS peuvent empêcher l’API ; le mode manuel reste disponible.
+### 3. Marquer un moment pendant le live
 
-## Extension Chrome / Edge : bouton REC sur Twitch
+- Cliquez sur **● REC**, ou appuyez sur **B** lorsque l’onglet du live Twitch est au premier plan. Le marqueur est envoyé à VOD Marker en arrière-plan : vous pouvez rester sur le stream.
+- Le nom de la chaîne est détecté depuis l’adresse Twitch. En mode API, VOD Marker récupère les informations du live et calcule le timecode. Si la connexion Twitch est nécessaire, le site vous demandera de vous connecter et reprendra le marqueur après l’autorisation.
+- Pour retrouver les marqueurs, ouvrez l’onglet VOD Marker. Vous pouvez les modifier, ajouter des notes, puis copier ou télécharger la liste.
+- Le bouton peut être déplacé par glisser-déposer ; sa position est mémorisée.
 
-Le dossier `extension/` contient une extension Chromium (Chrome et Edge) qui ajoute un bouton flottant **● REC** sur Twitch. Son raccourci est synchronisé avec celui choisi dans VOD Marker : cliquez sur **Changer**, appuyez sur la touche ou combinaison souhaitée, puis **Valider**. La touche **M** peut aussi déclencher le mute natif de Twitch. Chaque marqueur conserve le nom d’affichage et le login Twitch de la chaîne capturée, en plus du timecode. Ils apparaissent dans la liste et dans l’export pour identifier le streamer de chaque repère, même si le nom de la chaîne change ensuite.
+### Changer le raccourci
 
-1. Dans Chrome, ouvrez `chrome://extensions` (dans Edge : `edge://extensions`) et activez **Mode développeur**.
-2. Choisissez **Charger l’extension non empaquetée**, puis sélectionnez le dossier `extension/` fourni avec le projet.
-3. Ouvrez le menu de l’extension et cliquez une seule fois sur **Autoriser et ouvrir l’application**. L’adresse officielle est déjà préremplie ; acceptez l’autorisation d’accès demandée par le navigateur. Cela ouvre le site VOD Marker publié par l’auteur.
-4. Dans VOD Marker, connectez-vous à Twitch si demandé. Ensuite, ouvrez/rechargez Twitch ; le bouton REC est prêt à l’emploi. L’application et la connexion Twitch n’ont pas à être publiées ou configurées par l’utilisateur.
-Lors de la première configuration, l’application s’ouvre au premier plan. Sur Twitch, **● REC** ou le raccourci configuré dans VOD Marker enregistre ensuite le moment sans quitter le stream : le marqueur est envoyé à l’application dans un onglet d’arrière-plan, réutilisé s’il existe déjà. La chaîne est détectée depuis l’adresse Twitch et les informations du live sont actualisées via Helix. Si aucune connexion OAuth valide n’existe, l’application passe temporairement au premier plan pour permettre la connexion ; le marqueur est repris après validation. Une fois connecté, REC laisse le stream au premier plan.
+Dans l’onglet VOD Marker, cliquez sur **Changer**, appuyez sur la touche ou combinaison souhaitée, puis cliquez sur **Valider**. Cliquez sur **Annuler** ou appuyez sur **Échap** pour abandonner. Le raccourci affiché à côté de **Changer** est celui à utiliser sur Twitch. Le réglage est enregistré et transmis à l’extension ; gardez l’application ouverte pendant le changement, puis revenez sur l’onglet Twitch. Le raccourci fonctionne quand Twitch est au premier plan, mais pas lorsque vous tapez dans un champ de saisie.
 
-Le bouton REC se déplace par glisser-déposer et sa position est mémorisée localement. L’extension n’observe pas le DOM de Twitch en continu : elle ajoute le bouton une fois par chargement, sans boucle ni polling. À chaque marqueur, Helix actualise le timecode, le nom public, la catégorie, le titre et le nombre de spectateurs (aucun service supplémentaire). Le raccourci agit uniquement quand l’onglet Twitch est actif et n’intercepte pas les touches dans les champs de saisie. Après la configuration initiale, l’extension mémorise l’adresse ; elle ouvre l’index si REC est utilisé alors qu’il est fermé. L’index n’est pas lancé automatiquement au démarrage, afin d’éviter de consommer des ressources quand il n’est pas utilisé. Après une mise à jour de l’extension, cliquez sur **Recharger** sur sa fiche dans `chrome://extensions` (ou `edge://extensions`), puis rechargez Twitch. Le raccourci choisi dans VOD Marker est synchronisé avec l’extension lorsque l’application est ouverte ; le bouton **● REC** reste utilisable indépendamment. L’autorisation de site est limitée à `cmarcobioinfo.github.io`. Cette extension est actuellement pour Chrome/Edge (Manifest V3), pas Firefox. Elle n’accède pas au token Twitch. Pour arrêter, désactivez l’extension dans la page des extensions du navigateur.
+Le raccourci initial est **B**. Évitez **M** si vous ne voulez pas risquer de déclencher aussi le raccourci natif de Twitch pour couper le son. Le bouton **● REC** fonctionne quel que soit le raccourci choisi.
 
+### Si quelque chose ne fonctionne pas
 
-## Modes et fiabilité
+- **Pas de bouton REC :** vérifiez que l’extension est activée, puis rechargez l’onglet Twitch. Après avoir rechargé l’extension dans sa page, rechargez aussi Twitch.
+- **Le clic ou le raccourci n’envoie rien :** ouvrez VOD Marker une fois, vérifiez que l’autorisation d’accès au site a été accordée dans la fenêtre de l’extension, puis rechargez Twitch.
+- **Le raccourci ne réagit pas :** vérifiez la touche affichée dans VOD Marker, assurez-vous que l’onglet Twitch est actif et que le curseur n’est pas dans un champ de texte. Pour un nouveau raccourci, laissez VOD Marker ouvert pendant sa validation.
+- **Le timecode/API ne fonctionne pas :** vérifiez la connexion Internet et l’autorisation Twitch dans VOD Marker. Les modes manuel et démarrage local restent disponibles pour marquer depuis le site, mais l’extension utilise la synchronisation API Twitch.
 
-1. **API Twitch (fiable)** : utilise `started_at` de Helix ; durée = heure UTC actuelle moins l’heure de début UTC. Une vérification toutes les cinq minutes repère un live relancé et conserve les marqueurs en créant un segment.
-2. **Manuel (à vérifier)** : entrez le temps actuel (`01:12:30`) ou l’heure locale de début (`18:02`). **Resynchroniser** permet de corriger l’écart.
-3. **Démarrage local (estimation)** : démarre l’horloge au clic, avec décalage initial facultatif.
+## Utiliser VOD Marker sans l’extension
 
-Toutes les durées sont calculées depuis `Date.now()`, et non depuis un compteur d’intervalle : le temps reste juste après veille ou onglet inactif. La date réelle est présentée à l’heure locale. Le réglage « retrancher » compense le délai de réaction. Une valeur négative est ramenée à zéro.
+Ouvrez le site officiel [VOD Marker](https://cmarcobioinfo.github.io/VOD-Marker/) ou, pour les modes manuel et local, ouvrez `index.html` dans un navigateur. Choisissez un mode de synchronisation :
+
+1. **API Twitch (recommandé)** : connectez-vous, puis indiquez la chaîne si elle n’est pas déjà renseignée. Le timecode est calculé à partir de l’heure de début du live fournie par Twitch.
+2. **Manuel** : indiquez le temps écoulé (par exemple `01:12:30`) ou l’heure locale de début (`18:02`) ; vous pourrez resynchroniser au besoin.
+3. **Démarrage local** : lancez l’horloge vous-même, avec un décalage initial facultatif. C’est une estimation.
+
+Le raccourci de marquage par défaut est **B**. Le réglage **Retrancher** compense le délai de réaction en retirant les secondes choisies du timecode enregistré.
 
 ## Confidentialité et limites
 
-Les sessions, marqueurs, préférences et identifiants Twitch sont sauvegardés dans le `localStorage` du navigateur. Aucun serveur de ce projet ne reçoit de données. Le stockage local n’est pas chiffré : évitez les appareils publics, et effacez les données du navigateur après usage partagé. Une panne ou saturation du stockage est signalée ; la sauvegarde peut alors échouer. L’historique est propre au navigateur et n’est pas synchronisé entre appareils. La PWA utilise un service worker uniquement sur un site HTTP(S), pas en `file://`.
+Les marqueurs, préférences et token Twitch sont conservés dans le stockage local de votre navigateur ; ils ne sont pas synchronisés entre appareils. Le token n’est pas chiffré : ne vous connectez pas sur un appareil public et utilisez **Déconnecter** après usage sur un appareil partagé. La connexion et les demandes de données du mode API sont faites directement auprès de Twitch. Le Client ID intégré est public ; aucun Client Secret ne vous est demandé. Ce projet n’est pas affilié à Twitch.
 
-**Ce projet n’est pas affilié à Twitch.**
+L’extension est prévue pour Chrome et Edge sur ordinateur (Manifest V3), pas pour Firefox. Elle ne lit pas votre token Twitch. Pour la désinstaller, désactivez-la ou supprimez-la depuis la page des extensions du navigateur.
 
-## English (short)
+## Notes de publication (mainteneur du projet)
 
-A dependency-free static Twitch VOD timecode marker. Open `index.html` locally or publish with GitHub Pages. It supports Twitch OAuth sign-in, manual sync, and local-start modes. The public Twitch Client ID is configured in the app; OAuth tokens are stored in browser local storage. This project is not affiliated with Twitch.
-
-
-## Utilisation
-
-- Le raccourci de marquage par défaut est **B**. Cliquez sur **Changer**, appuyez sur la touche ou combinaison souhaitée, puis choisissez **Valider** ou **Annuler**. Le raccourci validé est synchronisé avec l’extension Chrome pour Twitch. Choisir **M** peut également déclencher le mute natif de Twitch.
-- Cliquez sur **Marquer ce moment** ou utilisez la touche/combinaison choisie. Une note courte et une correction de timecode sont accessibles avec **Modifier** sur le marqueur.
-- Vous pouvez annuler la dernière suppression, vider la session (une copie est archivée), copier ou télécharger la liste. L’en-tête et la date/heure/notes sont configurables.
-- La reprise automatique utilise le stockage du navigateur. Pour une nouvelle session, utilisez « Vider la session ».
-
-# Marqueur VOD Twitch
-
-Petit outil web autonome pour noter les moments forts d’un stream avec le **temps écoulé de sa VOD**, afin de transmettre les repères à votre monteuse. Interface française/anglaise, thème sombre, marqueurs modifiables, notes, historique et export texte.
-
-## Aperçu de l’interface
-
-L’écran comprend les paramètres de synchronisation, une grande horloge de timecode et un bouton de marquage, la liste des repères, puis les réglages d’export et l’historique. Le thème sombre est adapté à une fenêtre posée à côté du stream ; la mise en page s’adapte aux mobiles.
-
-## Lancer en local
-
-Téléchargez ou décompressez le projet, puis double-cliquez sur `index.html`. Aucun serveur, installation ou compilation n’est nécessaire. Les modes manuel et local fonctionnent hors ligne. L’accès API à Twitch peut être restreint par le navigateur lorsque la page est ouverte en `file://`; dans ce cas, utilisez un hébergement GitHub Pages ou un mode manuel.
-
-## Modes de calcul et fiabilité
-
-1. **API Twitch — fiable** : connectez-vous via OAuth puis saisissez le nom de la chaîne. Helix retourne `started_at`; le timecode est calculé à partir de l’horloge système et de cet instant UTC. La connexion est vérifiée au démarrage et toutes les heures ; les infos du live sont actualisées toutes les cinq minutes. Un redémarrage est signalé et démarre un nouveau segment sans supprimer les anciens repères.
-2. **Synchronisation manuelle — à vérifier** : renseignez le temps écoulé (par exemple `01:12:30`) ou l’heure locale de début (`18:02`). Le bouton de resynchronisation reste disponible pour corriger le décalage.
-3. **Démarrage local — estimation** : le timecode avance depuis le clic sur Démarrer, avec un décalage initial facultatif. À utiliser en dernier recours.
-
-Le réglage « retrancher » enlève quelques secondes du timecode capturé pour compenser le délai de réaction. La date réelle affichée est locale ; les calculs reposent sur des timestamps. Une durée négative est ramenée à zéro.
-
-## Maintenance : publier ou mettre à jour le site (auteur du projet)
-
-Ces étapes ne concernent pas les utilisateurs de l’extension. Pour publier votre propre copie, créez un dépôt GitHub, envoyez-y les fichiers du projet (`index.html`, `css/`, `js/`, `assets/`, etc.), puis activez **Settings → Pages → Deploy from a branch**, branche `main`, dossier `/ (root)`. L’adresse publiée doit être en HTTPS. Pour cette version, l’extension et la redirection OAuth sont configurées pour `https://cmarcobioinfo.github.io/VOD-Marker/` ; un déploiement à une autre adresse nécessite aussi d’adapter et republier la configuration de l’extension ainsi que l’URL de redirection OAuth Twitch. Changer seulement l’adresse de GitHub Pages ne suffit pas.
-
-## Données, limites et sécurité
-
-Les marqueurs, sessions, préférences et token restent dans le `localStorage` du navigateur. Le Client ID Twitch intégré est public. Rien n’est envoyé à un serveur du projet ; la connexion OAuth et le mode API contactent directement Twitch. Une panne de stockage est signalée, mais les changements non sauvegardés peuvent être perdus. L’historique est conservé dans le navigateur courant ; ce n’est pas une synchronisation entre appareils. Le token dans `localStorage` n’est pas chiffré : protégez votre appareil et ne vous connectez pas sur un appareil public. Le service et l’API Twitch sont soumis à leurs propres disponibilités, règles et quotas. Le mode API avec `file://` dépend des restrictions du navigateur. Le téléchargement et la copie sont destinés aux navigateurs modernes.
-
-Ce projet est indépendant et **n’est pas affilié à Twitch**.
+Ces étapes ne concernent pas les personnes qui utilisent le site officiel. Pour publier une copie, déployez les fichiers du projet sur GitHub Pages en HTTPS. L’extension fournie est limitée au site `https://cmarcobioinfo.github.io/VOD-Marker/` et la redirection OAuth Twitch est configurée pour cette même adresse. Une autre adresse de publication nécessite d’adapter et de republier la configuration de l’extension ainsi que l’URL de redirection OAuth Twitch ; changer uniquement l’adresse GitHub Pages ne suffit pas.
 
 ## English (short)
 
-A static, dependency-free Twitch VOD timecode marker. The published version and Twitch application are already configured: users only need the Chrome/Edge extension and Twitch sign-in. The project owner handles GitHub Pages publishing; custom deployments require matching extension and Twitch OAuth redirect configuration. Credentials and markers stay in your browser’s local storage; only API mode contacts Twitch. This project is not affiliated with Twitch.
+VOD Marker records Twitch stream timecodes and exports marker lists. Install the Chrome/Edge extension from the `extension/` folder, click **Authorize and open the app**, sign in to Twitch, then use **● REC** or the configured shortcut (default: **B**) on a Twitch stream. The app and extension store data locally in your browser. Not affiliated with Twitch.
