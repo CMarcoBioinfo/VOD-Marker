@@ -1,6 +1,8 @@
 (() => {
   const ROOT_ID = 'vod-marker-rec-root';
   const POSITION_KEY = 'recPosition';
+  const SHORTCUT_KEY = 'markerShortcut';
+  let markerShortcut = 'B';
   let busy = false;
   let suppressClick = false;
   let statusTimer;
@@ -16,7 +18,7 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = '● REC';
-    button.title = 'Cliquer pour marquer · déplacer en faisant glisser · raccourci : B';
+    button.title = `Cliquer pour marquer · déplacer en faisant glisser · raccourci : ${markerShortcut}`;
     button.setAttribute('aria-label', 'Marquer ce moment. Faire glisser pour déplacer le bouton.');
     button.style.cssText = 'border:0;border-radius:999px;padding:12px 18px;background:#d92d45;color:white;font:700 15px system-ui,sans-serif;box-shadow:0 4px 18px #0008;cursor:grab;touch-action:none;user-select:none;';
     button.addEventListener('click', () => {
@@ -116,13 +118,41 @@
     }
   }
 
+  function isValidShortcut(value) {
+    if (typeof value !== 'string') return false;
+    const parts = value.split('+'), key = parts.pop(), modifiers = parts;
+    return /^(?:[A-Z0-9]|F(?:[1-9]|1[0-2])|Space|Arrow(?:Up|Down|Left|Right)|Home|End|PageUp|PageDown|Insert|Delete|Escape|Tab|Enter|Backspace)$/.test(key) && modifiers.every(modifier => ['Ctrl', 'Alt', 'Shift', 'Meta'].includes(modifier)) && new Set(modifiers).size === modifiers.length;
+  }
+
+  function setShortcut(shortcut) {
+    if (!isValidShortcut(shortcut)) return;
+    markerShortcut = shortcut;
+    const button = document.querySelector(`#${ROOT_ID} button`);
+    if (button) button.title = `Cliquer pour marquer · déplacer en faisant glisser · raccourci : ${markerShortcut}`;
+  }
+
+  chrome.storage.local.get(SHORTCUT_KEY, ({ [SHORTCUT_KEY]: shortcut }) => setShortcut(shortcut || 'B'));
+  chrome.runtime.onMessage.addListener(message => {
+    if (message?.type === 'vod-marker-shortcut-update') setShortcut(message.shortcut);
+  });
+
   document.addEventListener('keydown', event => {
     const target = event.target;
     const typing = target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
-    if (typing || event.isComposing || event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.key.toLowerCase() !== 'b') return;
+    if (typing || event.isComposing || event.repeat) return;
+    const modifiers = [];
+    if (event.ctrlKey) modifiers.push('Ctrl');
+    if (event.altKey) modifiers.push('Alt');
+    if (event.shiftKey) modifiers.push('Shift');
+    if (event.metaKey) modifiers.push('Meta');
+    const key = event.key === ' ' ? 'Space' : event.key.length === 1 ? event.key.toUpperCase() : event.key;
+    if ([event.ctrlKey && 'Control', event.altKey && 'Alt', event.shiftKey && 'Shift', event.metaKey && 'Meta'].includes(event.key)) return;
+    const pressed = [...modifiers, key].join('+');
+    if (pressed.toLowerCase() !== markerShortcut.toLowerCase()) return;
     event.preventDefault();
+    event.stopImmediatePropagation();
     record();
-  });
+  }, true);
 
   if (document.body) install();
   else document.addEventListener('DOMContentLoaded', install, { once: true });

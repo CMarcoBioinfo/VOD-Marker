@@ -1,4 +1,11 @@
 const APP_URL_KEY = 'appUrl';
+const SHORTCUT_KEY = 'markerShortcut';
+const SHORTCUT_PATTERN = /^(?:[A-Z0-9]|F(?:[1-9]|1[0-2])|Space|Arrow(?:Up|Down|Left|Right)|Home|End|PageUp|PageDown|Insert|Delete|Escape|Tab|Enter|Backspace)$/;
+function isValidShortcut(value) {
+  if (typeof value !== 'string') return false;
+  const parts = value.split('+'), key = parts.pop(), modifiers = parts;
+  return SHORTCUT_PATTERN.test(key) && modifiers.every(modifier => ['Ctrl', 'Alt', 'Shift', 'Meta'].includes(modifier)) && new Set(modifiers).size === modifiers.length;
+}
 
 async function registerAppBridge(url) {
   const parsed = new URL(url);
@@ -79,6 +86,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   if (message?.type === 'vod-marker-configured' && typeof message.appUrl === 'string') {
     registerAppBridge(message.appUrl).then(() => sendResponse({ ok: true })).catch(() => sendResponse({ ok: false }));
+    return true;
+  }
+  if (message?.type === 'vod-marker-shortcut-update') {
+    chrome.storage.local.get(APP_URL_KEY).then(async ({ [APP_URL_KEY]: appUrl }) => {
+      if (!appUrl || !sender.tab?.url) { sendResponse({ ok: false }); return; }
+      const expected = new URL(appUrl), current = new URL(sender.tab.url);
+      if (current.origin !== expected.origin || current.pathname !== expected.pathname || !isValidShortcut(message.shortcut)) { sendResponse({ ok: false }); return; }
+      await chrome.storage.local.set({ [SHORTCUT_KEY]: message.shortcut });
+      const tabs = await chrome.tabs.query({ url: ['https://www.twitch.tv/*', 'https://twitch.tv/*'] });
+      await Promise.all(tabs.filter(tab => tab.id !== undefined).map(tab => chrome.tabs.sendMessage(tab.id, { type: 'vod-marker-shortcut-update', shortcut: message.shortcut }).catch(() => {})));
+      sendResponse({ ok: true });
+    }).catch(() => sendResponse({ ok: false }));
     return true;
   }
   if (message?.type === 'vod-marker-activate-for-oauth') {

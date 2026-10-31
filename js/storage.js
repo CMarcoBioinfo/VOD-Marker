@@ -1,7 +1,7 @@
 /* Stockage versionné : toute lecture/écriture est protégée contre les erreurs navigateur. */
 window.VodStorage=(()=>{
  const KEY="vod-marker-data-v1";let failed=false;
- function fresh(){return {version:1,session:{id:makeId(),channel:"",mode:null,markers:[],segments:[],createdAt:new Date().toISOString()},history:[],settings:{language:"fr",theme:"dark",subtract:10,shortcut:"m",clientId:"",token:"",manualValue:"",manualType:"elapsed",localOffset:"00:00:00",exportDate:false,exportNotes:true,exportHeader:false,exportOptionsVersion:1}};}
+ function fresh(){return {version:1,session:{id:makeId(),channel:"",mode:null,markers:[],segments:[],createdAt:new Date().toISOString()},history:[],settings:{language:"fr",theme:"dark",subtract:10,shortcut:"b",clientId:"",token:"",manualValue:"",manualType:"elapsed",localOffset:"00:00:00",exportDate:false,exportNotes:true,exportHeader:false,exportOptionsVersion:1}};}
  function makeId(){return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`;}
  function valid(data){
   if(!data||data.version!==1||!data.session||!Array.isArray(data.session.markers)||!Array.isArray(data.history)||!data.settings)return false;
